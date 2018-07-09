@@ -5,7 +5,7 @@ function fakeWithOrigin(location) {
   if (location.handle.isNull())
     return location;
 
-  const CLLocationDegrees = 'float';
+  const CLLocationDegrees = (Process.pointerSize === 4) ? 'float' : 'double';
   const CLLocationCoordinate2D = [CLLocationDegrees, CLLocationDegrees];
   const CLLocationCoordinate2DMake = new NativeFunction(
     Module.findExportByName('CoreLocation', 'CLLocationCoordinate2DMake'),
@@ -65,9 +65,12 @@ const callbacks = {
 
 [
   '- startUpdatingLocation',
-  '- startUpdatingHeading',
+  '- startUpdatingHeading', // heading is unavailable on macOS
   '- requestLocation'
 ].forEach(function(methodName) {
+  if (!(methodName in ObjC.classes.CLLocationManager))
+    return;
+
   Interceptor.attach(ObjC.classes.CLLocationManager[methodName].implementation, {
     onEnter: function(args) {
       const delegate = new ObjC.Object(args[0]).delegate();
