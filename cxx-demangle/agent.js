@@ -22,14 +22,17 @@ if (Process.platform == 'windows') {
   }
 } else {
   function getPtr() {
+    // Module.findExportByName(null, '__cxa_demangle') does not work on Android
     const list = ['libc++.so', 'libc++abi.dylib', null];
     var p = null, i = 0;
-    while (!p) {
-      p = Module.findExportByName(list[i++], '__cxa_demangle');
-      if (i >= list.length)
-        throw new Error('unsupported platform: ' +
-          Process.platform + ', arch: ' + Process.arch);
+    while (!p && i < list.length) {
+      const name = list[i++];
+      p = Module.findExportByName(name, '__cxa_demangle');
     }
+
+    if (!p)
+      throw new Error('unsupported platform: ' +
+        Process.platform + ', arch: ' + Process.arch);
 
     return p;
   }
@@ -70,7 +73,7 @@ if (Process.platform == 'windows') {
       function(item) {
         return item.name.startsWith('_Z')
       }).forEach(function(item) {
-      console.log(demangle(item.name));
+      console.log(cxaDemangle(item.name));
     })
 
   else
