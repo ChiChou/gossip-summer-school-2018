@@ -20,3 +20,6 @@ console.log(DebugSymbol.fromAddress(vtable));
 console.log('age', Memory.readInt(instance.add(8)));
 console.log('weight', Memory.readInt(instance.add(12)));
 
+Memory.writeInt(instance.add(8), 1);
+// patched data
+print(instance);
