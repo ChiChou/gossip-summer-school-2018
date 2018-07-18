@@ -5,6 +5,14 @@ import frida
 import os
 
 
+def user_input():
+    prompt = 'please input something: '
+    try:
+        return raw_input(prompt)
+    except:
+        return input(prompt)
+
+
 # attach to python interpreter process itself :)
 session = frida.attach(os.getpid())
 script = session.create_script("""\
@@ -40,10 +48,19 @@ setTimeout(function() {
   throw new Error('other exception');
 }, 100);
 
+setImmediate(function() {
+  recv('input', function(msg) {
+    console.log('>>> you have just input', msg.payload);
+  }).wait();
+});
+
 """)
 
 def on_message(msg, payload):
     print('msg', msg, payload)
+
+    if msg.get('payload') and msg.get('payload').get('topic') == 'greet':
+      script.post({ 'type': 'input', 'payload': user_input() })
 
 def on_console_log(level, text):
     print('console.' + level + ':', text)
