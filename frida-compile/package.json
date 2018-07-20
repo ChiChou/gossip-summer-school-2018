@@ -1,0 +1,41 @@
+{
+  "name": "frida-compile-example",
+  "version": "1.0.0",
+  "description": "example frida-compile usage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ts": "frida-compile hello.ts -o hello.dist.js",
+    "generator": "frida-compile generator.js -o generator.dist.js",
+    "async": "frida-compile async-await.js -o async-await.dist.js"
+  },
+  "author": "",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            [
+              "es2015",
+              {
+                "loose": true
+              }
+            ]
+          ],
+          "plugins": [
+            "transform-runtime",
+            "transform-regenerator",
+            "transform-async-functions"
+          ]
+        }
+      ]
+    ]
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "babel-plugin-transform-async-functions": "^6.22.0",
+    "babel-plugin-transform-regenerator": "^6.26.0",
+    "frida-compile": "^6.0.0"
+  }
+}
