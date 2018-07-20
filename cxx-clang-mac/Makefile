@@ -10,5 +10,8 @@ run: build
 format:
 	clang-format -i main.cpp
 
+dump:
+	clang -cc1 -fdump-record-layouts main.cpp
+
 clean:
 	rm -rf build/
